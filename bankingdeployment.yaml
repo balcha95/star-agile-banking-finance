@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: balcha-banking-container
-        image: balcha/banking-app
+        image: balcha/banking-app:11
         ports:
         - containerPort: 8081
 ---
