@@ -1,37 +1,34 @@
- pipeline {
-    
-    agent {
-        label 'slavenode1'
+pipeline {
+    agent { label 'slavenode1' }
+	
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+	        maven "maven"
     }
 
-    tools 
-    {
-        maven 'maven'
-    }
-    
-    stages {
-        stage('SCM-Checkout') {
+	environment {	
+		DOCKERHUB_CREDENTIALS=credentials('new_docker_id')
+	} 
+    stages { 
+        stage('SCM Checkout') {
             steps {
                 // Get some code from a GitHub repository
-                git 'https://github.com/balcha95/star-agile-banking-finance.git'
-
+                 git 'https://github.com/balcha95/star-agile-banking-finance.git'
             }
-        }
-        stage('Build') {
+		}
+        stage('Maven Build') {
             steps {
                 // Run Maven on a Unix agent.
                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
             }
 		}
-        environment {	
-		DOCKERHUB_CREDENTIALS=credentials('dockerNewId')
-	   } 
-		stage("Docker build"){
+         stage("Docker build"){
 	        steps {
 					sh 'docker version'
 					sh "docker build -t balcha/banking-app:${BUILD_NUMBER} ."
 					sh 'docker image list'
-					sh "docker tag balcha/banking-app:${BUILD_NUMBER} csark/banking-app:latest"
+					sh "docker tag balcha/banking-app:${BUILD_NUMBER} balcha/banking-app:latest"
 	            }
 	        }
 	    stage('Login2DockerHub') {
