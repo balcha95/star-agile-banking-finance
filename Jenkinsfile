@@ -42,28 +42,33 @@ pipeline {
         }
     }
 }
-stage('Push2DockerHub') {
+stage('Login2DockerHub') {
 
 			steps {
-				sh "docker push balcha/banking-app:latest"
+				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
 			}
 		}
-stage('Approve - Deployment to Kubernetes Cluster'){
+        stage('Approve - push Image to dockerhub'){
             steps{
                 
-                //----------------send an approval prompt-----------
+                //----------------send an approval prompt-------------
                 script {
                    env.APPROVED_DEPLOY = input message: 'User input required Choose "yes" | "Abort"'
                        }
                 //-----------------end approval prompt------------
             }
         }
+		stage('Push2DockerHub') {
 
+			steps {
+				sh "docker push balcha/banking-app:latest"
+			}
+		}
 	stage('Deploy to Kubernetes Cluster') {
             steps {
 		script {
              sshPublisher(publishers: [sshPublisherDesc(configName: 'kuberneteCluster', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'kubectl apply -f k8sdeployment.yaml', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '.', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*.yaml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])		}
             }
+        }
 	}
-    }
 }
