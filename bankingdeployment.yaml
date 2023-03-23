@@ -5,7 +5,7 @@ metadata:
   labels:
     app: balcha-banking-deploy
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: balcha-banking-deploy
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: balcha-banking-container
-        image: balcha/banking-app:11
+        image: balcha/banking-app
         ports:
         - containerPort: 8081
 ---
