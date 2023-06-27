@@ -5,7 +5,7 @@ metadata:
   labels:
     app: balcha-banking-deploy
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: balcha-banking-deploy
